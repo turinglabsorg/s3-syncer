@@ -187,23 +187,27 @@ async function syncAll() {
             normalized = normalized.replace(localfolder, '')
             console.log('Checking ' + normalized)
             let last = normalized.substr(-1)
-            if (Disk.indexOf(normalized) === -1 && last !== '/') {
-                console.log('Downloading ' + spaceFile + ' into disk')
-                let downloaded = false
-                let retries = 0
-                while (downloaded === false) {
-                    downloaded = await downloadFromSpace(normalized)
-                    if (downloaded === true) {
-                        console.info(spaceFile + ' downloaded correctly.')
+            if(normalized.indexOf(localfolder) !== -1){
+                if (Disk.indexOf(normalized) === -1 && last !== '/') {
+                    console.log('Downloading ' + spaceFile + ' into disk')
+                    let downloaded = false
+                    let retries = 0
+                    while (downloaded === false) {
+                        downloaded = await downloadFromSpace(normalized)
+                        if (downloaded === true) {
+                            console.info(spaceFile + ' downloaded correctly.')
+                        }
+                        retries++
+                        if (retries >= 5) {
+                            downloaded = true
+                            console.error('Error on download')
+                        }
                     }
-                    retries++
-                    if (retries >= 5) {
-                        downloaded = true
-                        console.error('Error on download')
-                    }
+                } else {
+                    console.error(normalized + ' exists in Disk')
                 }
-            } else {
-                console.error(normalized + ' exists in Disk')
+            }else{
+                console.log('Ignoring ' + normalized)
             }
         }
 
