@@ -143,7 +143,7 @@ function uploadToSpace(file) {
 function downloadFromSpace(spaceFile) {
     return new Promise(response => {
         try {
-            var url = "https://" + process.env.do_space + "." + process.env.do_endpoint + '/' + spaceFile.replace('./', '/')
+            var url = "https://" + process.env.do_space + "." + process.env.do_endpoint + spaceFile.replace('./', '/')
             let xpl = spaceFile.split('/')
             let lastchunk = xpl.length - 1
             let folder = spaceFile.replace(xpl[lastchunk], '')
