@@ -120,7 +120,7 @@ function uploadToSpace(file) {
                     Bucket: process.env.do_space,
                     ACL: 'public-read',
                     Body: fs.createReadStream(file),
-                    Key: localfolder.replace('./', '') + file,
+                    Key: file.replace('./', ''),
                     ContentType: type
                 }, { Bucket: process.env.do_space }, function (err, data) {
                     if (err) {
