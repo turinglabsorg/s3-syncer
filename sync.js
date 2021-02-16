@@ -92,10 +92,14 @@ function readFolder(folder) {
                         console.log('Reading folder ' + folderPath)
                         let subfolder = await readFolder(folderPath)
                         if (subfolder.length > 0) {
-                            Disk.push(subfolder.replace(localfolder + '/', ''))
+                            if (Disk.indexOf(subfolder.replace(localfolder + '/', '')) === -1) {
+                                Disk.push(subfolder.replace(localfolder + '/', ''))
+                            }
                         }
                     } else {
-                        Disk.push(folder.replace(localfolder, '') + '/' + file)
+                        if (Disk.indexOf(folder.replace(localfolder, '') + '/' + file) === -1) {
+                            Disk.push(folder.replace(localfolder, '') + '/' + file)
+                        }
                     }
                 })
             })
@@ -111,11 +115,12 @@ function uploadToSpace(file) {
         try {
             let type = mime.lookup(localfolder + '/' + file)
             if (type !== '' && type.length > 0) {
+                console.log('Uplading to ' + localfolder.replace('./', '/') + file)
                 s3.upload({
                     Bucket: process.env.do_space,
                     ACL: 'public-read',
                     Body: fs.createReadStream(localfolder + '/' + file),
-                    Key: localfolder.replace('./', '/') + '/' + file,
+                    Key: localfolder.replace('./', '') + file,
                     ContentType: type
                 }, { Bucket: process.env.do_space }, function (err, data) {
                     if (err) {
@@ -138,7 +143,7 @@ function uploadToSpace(file) {
 function downloadFromSpace(spaceFile) {
     return new Promise(response => {
         try {
-            var url = "https://" + process.env.do_space + "." + process.env.do_endpoint + spaceFile.replace('./', '/')
+            var url = "https://" + process.env.do_space + "." + process.env.do_endpoint + '/' + spaceFile.replace('./', '/')
             let xpl = spaceFile.split('/')
             let lastchunk = xpl.length - 1
             let folder = spaceFile.replace(xpl[lastchunk], '')
@@ -172,13 +177,14 @@ async function syncAll() {
         let SpaceFiles = []
         for (let x in Space) {
             let spaceFile = Space[x]
-            SpaceFiles.push(spaceFile.Key.replace(localfolder.replace('.',''), ''))
+            SpaceFiles.push(spaceFile.Key.replace(localfolder.replace('.', ''), ''))
         }
         fs.writeFileSync('Space', JSON.stringify(SpaceFiles));
 
         for (let x in SpaceFiles) {
             let spaceFile = SpaceFiles[x]
-            let normalized = spaceFile.replace(localfolder.replace('.', ''), '')
+            let normalized = './' + spaceFile
+            normalized = normalized.replace(localfolder, '')
             console.log('Checking ' + normalized)
             let last = normalized.substr(-1)
             if (Disk.indexOf(normalized) === -1 && last !== '/') {
@@ -202,7 +208,7 @@ async function syncAll() {
         }
 
         for (let x in Disk) {
-            let localFile = Disk[x]
+            let localFile = localfolder.replace('./', '') + Disk[x]
             if (SpaceFiles.indexOf(localFile) === -1 && localFile.indexOf('image_here') === -1) {
                 console.log('Need to upload ' + localFile)
                 let uploaded = false
