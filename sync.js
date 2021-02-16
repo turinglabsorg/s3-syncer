@@ -115,11 +115,11 @@ function uploadToSpace(file) {
         try {
             let type = mime.lookup(localfolder + '/' + file)
             if (type !== '' && type.length > 0) {
-                console.log('Uplading to ' + localfolder.replace('./', '/') + file)
+                console.log('Uploading to ' + file)
                 s3.upload({
                     Bucket: process.env.do_space,
                     ACL: 'public-read',
-                    Body: fs.createReadStream(localfolder + '/' + file),
+                    Body: fs.createReadStream(file),
                     Key: localfolder.replace('./', '') + file,
                     ContentType: type
                 }, { Bucket: process.env.do_space }, function (err, data) {
