@@ -1,0 +1,29 @@
+{
+    "name": "space-syncer",
+    "version": "1.0.0",
+    "description": "",
+    "main": "sync.js",
+    "scripts": {
+        "start": "node sync.js",
+        "dev": "nodemon sync.js"
+    },
+    "dependencies": {
+        "aws-sdk": "^2.845.0",
+        "axios": "^0.21.1",
+        "better-console": "^1.0.1",
+        "dotenv": "^8.2.0",
+        "download-file": "^0.1.5",
+        "express": "^4.17.1",
+        "form-data": "^4.0.0",
+        "mime-types": "^2.1.28",
+        "minimist": "^1.2.5",
+        "multer": "^1.4.2",
+        "multer-s3": "^2.9.0",
+        "request": "^2.88.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.7"
+    },
+    "author": "turinglabsorg",
+    "license": "ISC"
+}
